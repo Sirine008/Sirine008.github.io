@@ -1,0 +1,102 @@
+{
+ "AMZN": {
+  "best": "Random Forest",
+  "models": {
+   "Naive (last value)": {
+    "rmse": 38.28,
+    "mape": 1.59,
+    "dir": null
+   },
+   "Ridge Regression": {
+    "rmse": 40.27,
+    "mape": 1.73,
+    "dir": 47.4
+   },
+   "Random Forest": {
+    "rmse": 38.36,
+    "mape": 1.62,
+    "dir": 52.6
+   },
+   "LSTM": {
+    "rmse": 38.37,
+    "mape": 1.59,
+    "dir": 54.4
+   }
+  }
+ },
+ "DPZ": {
+  "best": "Naive (last value)",
+  "models": {
+   "Naive (last value)": {
+    "rmse": 5.06,
+    "mape": 1.47,
+    "dir": null
+   },
+   "Ridge Regression": {
+    "rmse": 5.39,
+    "mape": 1.56,
+    "dir": 49.1
+   },
+   "Random Forest": {
+    "rmse": 5.6,
+    "mape": 1.62,
+    "dir": 46.5
+   },
+   "LSTM": {
+    "rmse": 5.09,
+    "mape": 1.48,
+    "dir": 50.0
+   }
+  }
+ },
+ "BTC": {
+  "best": "LSTM",
+  "models": {
+   "Naive (last value)": {
+    "rmse": 222.76,
+    "mape": 2.57,
+    "dir": null
+   },
+   "Ridge Regression": {
+    "rmse": 280.33,
+    "mape": 4.05,
+    "dir": 49.1
+   },
+   "Random Forest": {
+    "rmse": 228.65,
+    "mape": 2.68,
+    "dir": 52.6
+   },
+   "LSTM": {
+    "rmse": 224.75,
+    "mape": 2.66,
+    "dir": 49.6
+   }
+  }
+ },
+ "NFLX": {
+  "best": "LSTM",
+  "models": {
+   "Naive (last value)": {
+    "rmse": 9.32,
+    "mape": 2.13,
+    "dir": null
+   },
+   "Ridge Regression": {
+    "rmse": 9.72,
+    "mape": 2.19,
+    "dir": 49.1
+   },
+   "Random Forest": {
+    "rmse": 9.56,
+    "mape": 2.22,
+    "dir": 46.5
+   },
+   "LSTM": {
+    "rmse": 9.38,
+    "mape": 2.15,
+    "dir": 47.4
+   }
+  }
+ }
+}
