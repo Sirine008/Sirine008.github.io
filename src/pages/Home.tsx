@@ -104,7 +104,7 @@ function SelectedWork() {
         <h2 id="work-title" className="section-title">
           Selected work
         </h2>
-        <p className="mono muted">Four case studies · each with its decisions and its limits</p>
+        <p className="mono muted">Five case studies · each with its decisions and its limits</p>
       </div>
       <ol className="work-list">
         {projects.map((p) => (

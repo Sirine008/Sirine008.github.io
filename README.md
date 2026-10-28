@@ -8,7 +8,7 @@ each case study states its decisions and its limits, and unfinished or synthetic
 ## Stack
 
 - React 19 + TypeScript + Vite
-- React Router (homepage, four case-study pages, 404)
+- React Router (homepage, five case-study pages, 404)
 - Pages pre-rendered to static HTML at build time (`scripts/prerender.mjs`), then hydrated in the browser
 - Plain CSS with design tokens (`src/styles.css`), self-hosted fonts (Fraunces, Instrument Sans, IBM Plex Mono)
 - No backend, no tracking, no secrets
@@ -36,7 +36,7 @@ npm run dev        # http://localhost:5173
 
 | What | Where |
 | --- | --- |
-| Repository / demo links (Attijari dashboard, agricultural analytics…) | `src/content/links.ts` — replace `null` with the URL |
+| Repository / demo links (agricultural analytics…) | `src/content/links.ts` — replace `null` with the URL |
 | Email, LinkedIn, GitHub, CV path | `src/content/links.ts` → `profile` |
 | Projects, case studies, notebook entries | `src/content/projects.ts` |
 | Hero evidence notes, path, expertise, page titles | `src/content/site.ts` |

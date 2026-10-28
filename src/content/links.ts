@@ -25,8 +25,8 @@ export const projectLinks: Record<string, { repo: string | null; demo: string | 
   thniyetna: { repo: 'https://github.com/Sirine008/thniyetna', demo: null },
   'faculty-administration': { repo: 'https://github.com/Sirine008/Faculty-Administration-System-', demo: null },
   'stock-forecasting': { repo: 'https://github.com/Sirine008/stock-market-prediction', demo: null },
+  'attendance-dashboard': { repo: 'https://github.com/Sirine008/attendance-dashboard-ml', demo: null },
   // Notebook entries
-  'attendance-dashboard': { repo: null, demo: null },
   'agri-analytics': { repo: null, demo: null },
   'semantic-matching': { repo: 'https://github.com/Sirine008/NLP-Semantic-Matching', demo: null },
 }

@@ -418,6 +418,109 @@ export const projects: Project[] = [
       ],
     },
   },
+  {
+    slug: 'attendance-dashboard',
+    number: '05',
+    title: 'Absence-risk estimates a manager can question',
+    context: 'Internship · Attijari Bank, IT Studies department · 2025',
+    summary:
+      'An attendance dashboard for HR and line managers, built from raw badge-clock records, with next-day and next-week absence-risk estimates that show their associated factors and never claim certainty.',
+    stackLine: 'Spring Boot · Angular · FastAPI · scikit-learn · LightGBM · SHAP · PostgreSQL · Docker',
+    decision: 'A model is promoted only if it beats a simple baseline on validation. On the real data, none did.',
+    ...link('attendance-dashboard'),
+    caseStudy: {
+      facts: [
+        { term: 'Role', value: 'Intern — software development & machine learning' },
+        { term: 'When', value: 'June 2025 · public version of the code, 2026' },
+        { term: 'Data', value: '11,358 badge records, 8 employees, Jan 2024 – May 2025' },
+        { term: 'Scope', value: 'Data rules, API, ML service, dashboard, tests' },
+      ],
+      problem: [
+        'Attendance lived in raw badge-clock exports: one sheet per employee, entry and exit events on several doors, duplicates, missing punches. Answering "how is my team doing this month?" meant reading timestamps by hand.',
+        'The bank also wanted to anticipate absences. With eight employees and about 130 one-off absence days, the risk was a model that looks accurate but is no better than common sense.',
+      ],
+      built: [
+        'An idempotent import of the Excel exports into PostgreSQL, and a daily attendance table built from explicit rules: Tunisian public holidays, personal reference schedules (arrival times range from 7:50 to 9:30), internal doors that are not building exits, incomplete days flagged instead of guessed.',
+        'A Spring Boot API with JWT roles — a line manager only sees their own team, enforced server-side — and an audit log of every individual record viewed.',
+        'A Python pipeline with leakage-free features, two baselines, logistic regression and LightGBM, probability calibration, SHAP explanations and model versioning, served by FastAPI and called by a scheduled job every working morning.',
+        'An Angular dashboard: day / month / year KPIs, trends, a per-employee calendar and punch timeline, and risk cards labelled "statistical estimate, not a certainty".',
+      ],
+      diagram: {
+        title: 'From badge records to an estimate',
+        lanes: [
+          {
+            label: 'Every import',
+            steps: [
+              { kind: 'io', tag: 'Input', title: 'Badge-clock Excel export' },
+              { kind: 'code', tag: 'Spring Boot', title: 'Clean, deduplicate, normalise doors' },
+              { kind: 'code', tag: 'Rules', title: 'Holidays, personal schedule, one-off vs long absence' },
+              { kind: 'store', tag: 'PostgreSQL', title: 'Daily attendance per employee' },
+            ],
+          },
+          {
+            label: 'Every working morning',
+            steps: [
+              { kind: 'code', tag: 'Scheduled job', title: 'Ask the ML service for estimates' },
+              { kind: 'code', tag: 'FastAPI', title: 'Features known at that date only' },
+              { kind: 'code', tag: 'Active model', title: 'Calibrated probability + associated factors' },
+              { kind: 'store', tag: 'PostgreSQL', title: 'Estimates stored with the model version', detail: 'compared later with what happened' },
+            ],
+          },
+        ],
+        note: 'If the ML service is down, the dashboard keeps working and shows that estimates are unavailable.',
+        caption: 'Illustrative diagram, simplified. No language model is involved in this project.',
+      },
+      decisions: [
+        {
+          title: 'Promote a model only if it beats the baseline',
+          body: 'Models were selected on a monthly walk-forward validation over the second half of 2024. A simple rule — the employee’s own absence rate for that weekday — scored best on both horizons, so the rule produces the estimates.',
+        },
+        {
+          title: 'Do not choose on the test set',
+          body: 'On the 2025 test period, logistic regression did better for the next day (PR-AUC 0.193 against 0.135). Switching to it after seeing the test would have been leakage, so the result is documented and the choice unchanged.',
+        },
+        {
+          title: 'Estimates, not verdicts',
+          body: 'Probabilities are calibrated and shown as low / moderate / high bands with their associated factors, never as causes. No estimate is shown with less than 30 working days of history, and the tool is documented as a planning aid, not an evaluation.',
+        },
+      ],
+      results: {
+        intro: 'Precision–recall AUC on the real data — selection on validation (July–December 2024), test on 2025:',
+        rows: [
+          { label: 'Next day — weekday-rate baseline (used) · validation', value: '0.162' },
+          { label: 'Next day — best learned model (LightGBM) · validation', value: '0.152' },
+          { label: 'Next day — share of absence days in the 2025 test', value: '5.2 %' },
+          { label: 'Next week — weekday-rate baseline (used) · validation', value: '0.311' },
+          { label: 'Next week — best learned model (LightGBM) · validation', value: '0.225' },
+          { label: 'Tests — backend, ML, frontend, end-to-end', value: '36 · 20 · 12 · 4' },
+        ],
+        note: 'On 60 synthetic employees calibrated on the real statistics, the learned models clearly beat the baselines for the next day (0.21–0.22 against 0.11–0.13): the pipeline learns when the signal exists. The weakness on real data comes from its size. Synthetic results are reported separately.',
+      },
+      limits: [
+        'Eight employees and about 130 one-off absence days: differences of a few points are not significant.',
+        'The export contains no leave data, so a long absence (3+ working days) is an inference; team structure and most hire dates are fictional seed data.',
+        'Risk thresholds set on 2024 turn out high for the week horizon in 2025 and need recalibrating with users.',
+      ],
+      notice:
+        'Employee identities in the source export were anonymised by the bank. The export itself is not published; the public repository ships synthetic data only.',
+      stack: ['Java 21', 'Spring Boot', 'Spring Security + JWT', 'Flyway', 'PostgreSQL', 'Python', 'scikit-learn', 'LightGBM', 'SHAP', 'FastAPI', 'Angular', 'ECharts', 'Docker', 'Testcontainers', 'Playwright'],
+      sources: [
+        {
+          id: 1,
+          text: 'Repository README — architecture, business rules, results, limits.',
+          href: 'https://github.com/Sirine008/attendance-dashboard-ml',
+          linkLabel: 'attendance-dashboard-ml',
+        },
+        {
+          id: 2,
+          text: 'Model card — data, temporal split, baselines, calibration, thresholds.',
+          href: 'https://github.com/Sirine008/attendance-dashboard-ml/blob/main/ml-service/reports/model_card.md',
+          linkLabel: 'model_card.md',
+        },
+        { id: 3, text: 'CV — Attijari Bank internship, June 2025.', href: '/cv/Sirine_Tiouajni_CV_FR.pdf', linkLabel: 'CV (PDF)' },
+      ],
+    },
+  },
 ]
 
 export interface NotebookEntry {
@@ -430,14 +533,6 @@ export interface NotebookEntry {
 }
 
 export const notebook: NotebookEntry[] = [
-  {
-    slug: 'attendance-dashboard',
-    year: '2025',
-    title: 'Attendance dashboard with absence-risk prediction',
-    detail:
-      'Spring Boot / Angular application for attendance tracking, with a scikit-learn model predicting next-day and next-week absence risk, served by a FastAPI microservice and scheduled into PostgreSQL for HR.',
-    label: 'Internship · Attijari Bank',
-  },
   {
     slug: 'agri-analytics',
     year: '2025',
