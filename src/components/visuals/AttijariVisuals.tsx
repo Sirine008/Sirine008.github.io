@@ -1,7 +1,46 @@
 import { Bars, type BarRow } from '../viz/Bars'
+import { Gallery, type Shot } from '../viz/Gallery'
 import { TableView, VizBlock } from '../viz/VizBlock'
 
+const REPO = 'https://github.com/Sirine008/attendance-dashboard-ml'
 const CARD = 'https://github.com/Sirine008/attendance-dashboard-ml/blob/main/ml-service/reports/model_card.md'
+
+
+const W = '/images/work/'
+const shots: Shot[] = [
+  {
+    src: `${W}attijari-overview`,
+    width: 1320,
+    height: 1073,
+    title: 'Overview',
+    alt: 'Overview page for May 2025, team A: seven KPI cards (presence 97.9 %, one one-off absence, two late arrivals), a trend chart, an absence heatmap by weekday and an arrival-time histogram.',
+    caption: 'Month view for one team: KPIs compared with the previous period, trend, weekday heatmap, arrival times.',
+  },
+  {
+    src: `${W}attijari-employee`,
+    width: 1320,
+    height: 1224,
+    title: 'Employee record',
+    alt: 'Employee record: monthly calendar with present, late and incomplete days, the punch timeline of 15 May 2025 by door with an incomplete-day warning, and arrival times against the reference schedule.',
+    caption: 'Calendar, punch timeline by door — an odd number of punches is flagged, not guessed — and arrivals against the personal reference schedule.',
+  },
+  {
+    src: `${W}attijari-risks`,
+    width: 1320,
+    height: 983,
+    title: 'Risk estimates',
+    alt: 'Risk page for the next working day: four employee cards, each with a low risk band, an approximate probability, three associated factors and the mention "statistical estimate, not a certainty".',
+    caption: 'Each card shows a band, a rounded probability and the associated factors — listed alphabetically, never ranked.',
+  },
+  {
+    src: `${W}attijari-team`,
+    width: 1320,
+    height: 706,
+    title: 'Team table',
+    alt: 'Team table with presence rate, absences, late arrivals, average hours, incomplete days, a presence sparkline and next-day and next-week risk badges for four employees.',
+    caption: 'Sortable team table with CSV export; a line manager only sees their own team.',
+  },
+]
 
 /** PR-AUC from the model card (version v20261028-155209), real data only. */
 const RESULTS = {
@@ -39,7 +78,22 @@ const f3 = (v: number) => v.toFixed(3)
 
 export function AttijariVisuals() {
   return (
-    <VizBlock
+    <>
+      <VizBlock
+        id="att-shots"
+        kicker="Real screenshots · demo stack"
+        title="What a line manager sees"
+        lead={
+          <p>
+            Screenshots taken by the end-to-end tests, logged in as the manager of team A. Employees appear as the anonymised
+            letters of the source export; team names and hire dates are fictional seed data.
+          </p>
+        }
+        source={{ text: 'docs/screenshots in the repository.', href: `${REPO}/tree/main/docs/screenshots`, label: 'screenshots' }}
+      >
+        <Gallery shots={shots} label="Choose a screenshot" />
+      </VizBlock>
+      <VizBlock
       id="att-selection"
       kicker="Model selection · real data"
       title="On validation, the simple rule comes first"
@@ -66,6 +120,7 @@ export function AttijariVisuals() {
           ...RESULTS.w1.rows.map((r) => [r.name, 'Next week', f3(r.val), f3(r.test)]),
         ]}
       />
-    </VizBlock>
+      </VizBlock>
+    </>
   )
 }

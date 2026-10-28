@@ -502,7 +502,7 @@ export const projects: Project[] = [
         'Risk thresholds set on 2024 turn out high for the week horizon in 2025 and need recalibrating with users.',
       ],
       notice:
-        'Employee identities in the source export were anonymised by the bank. The export itself is not published; the public repository ships synthetic data only.',
+        'Employee identities in the source export were anonymised by the bank (shown as letters). The export itself is not published; the public repository ships synthetic data only.',
       stack: ['Java 21', 'Spring Boot', 'Spring Security + JWT', 'Flyway', 'PostgreSQL', 'Python', 'scikit-learn', 'LightGBM', 'SHAP', 'FastAPI', 'Angular', 'ECharts', 'Docker', 'Testcontainers', 'Playwright'],
       sources: [
         {
