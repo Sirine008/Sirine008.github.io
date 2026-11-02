@@ -521,6 +521,121 @@ export const projects: Project[] = [
       ],
     },
   },
+  {
+    slug: 'documind-ai',
+    number: '06',
+    title: 'DocuMind — answers you can check against the page',
+    context: 'Personal project · 2026',
+    summary:
+      'A RAG assistant for your own PDFs and notes: hybrid search over pgvector and PostgreSQL full-text, answers that cite the page they come from, study tools, and an evaluation run with a local LLM on a laptop CPU.',
+    stackLine: 'FastAPI · PostgreSQL / pgvector · Sentence Transformers · Ollama · React · TypeScript · Docker',
+    decision: 'No supporting passage, no answer: weak evidence stops the question before the model is called.',
+    ...link('documind-ai'),
+    caseStudy: {
+      facts: [
+        { term: 'Type', value: 'Personal project' },
+        { term: 'When', value: 'October – November 2026' },
+        { term: 'Model', value: 'Llama 3.2 3B via Ollama, local, CPU only — or a demo mode with no model' },
+        { term: 'Tests', value: '176 automated backend tests, run in CI on every push' },
+      ],
+      problem: [
+        'Language models answer confidently even when they are wrong, and long documents are slow to search by hand. A student revising a course reading or an employee checking a policy needs an answer they can verify, not one they have to trust.',
+        'So every answer had to point to the passage and page it comes from — and the assistant had to say so plainly when the documents do not contain the answer.',
+      ],
+      built: [
+        'An ingestion pipeline for PDF, TXT and Markdown: files are validated by their content (not their name), deduplicated by SHA-256, extracted page by page, cleaned, split into overlapping ~1,000-character passages that never cross a page, embedded, and written in a single transaction. Scanned PDFs fail with an explicit "OCR required" instead of indexing nothing.',
+        'Hybrid retrieval in PostgreSQL: semantic search with pgvector (HNSW index) and full-text search (GIN index), fused with Reciprocal Rank Fusion, then deduplicated and reranked.',
+        'Grounded answers: passages are sent to the model as numbered sources, citation labels that do not match a real passage are removed, and each valid citation is shown with its document, page and excerpt. Answers are streamed to the chat over server-sent events.',
+        'Conversations with follow-up questions, study tools — summaries, key points, revision notes and quizzes, each item linked to the passage it was built from — and an evaluation page that measures retrieval and answers.',
+      ],
+      diagram: {
+        title: 'From an uploaded file to a cited answer',
+        lanes: [
+          {
+            label: 'Indexing',
+            steps: [
+              { kind: 'io', tag: 'Input', title: 'PDF, TXT or Markdown upload' },
+              { kind: 'code', tag: 'Validation', title: 'Content checks, SHA-256 deduplication' },
+              { kind: 'code', tag: 'PyMuPDF', title: 'Extract and clean, page by page' },
+              { kind: 'code', tag: 'Chunker + MiniLM', title: 'Passages that never cross a page, embedded' },
+              { kind: 'store', tag: 'PostgreSQL', title: 'pgvector + full-text indexes', detail: 'one transaction per document' },
+            ],
+          },
+          {
+            label: 'Question',
+            steps: [
+              { kind: 'io', tag: 'Input', title: 'Question, optionally scoped to documents' },
+              { kind: 'store', tag: 'Hybrid retrieval', title: 'Vector + full-text, fused by RRF' },
+              { kind: 'code', tag: 'Evidence gate', title: 'Enough support? Otherwise stop' },
+              { kind: 'llm', tag: 'LLM · Ollama', title: 'Answer citing sources [S1], [S2]…' },
+              { kind: 'code', tag: 'Citation check', title: 'Keep only real sources', detail: 'answer · page · excerpt' },
+            ],
+          },
+        ],
+        note: 'When no passage covers enough of the question, the assistant answers "insufficient evidence" without calling the model. Requests for system prompts or credentials are refused before any retrieval.',
+        caption: 'Illustrative diagram, simplified.',
+      },
+      decisions: [
+        {
+          title: 'No evidence, no model call',
+          body: 'A check before generation decides whether the retrieved passages cover the question. If they do not, the answer is "insufficient evidence" — the model never gets the chance to fill the gap with something plausible.',
+        },
+        {
+          title: 'Citations are checked, not trusted',
+          body: 'The model only sees passages labelled S1, S2… Any label that does not match a supplied passage is dropped, each kept citation is resolved to the real chunk’s page and excerpt, and an answer left without a valid citation is shown as unverified.',
+        },
+        {
+          title: 'Test with the real model, then fix what it breaks',
+          body: 'The first run with Llama 3.2 3B scored 0.000 citation validity: the answers were right but carried no [S1] labels. The second counted refusals such as "X is not mentioned in the passages" as answers. Each problem was fixed in the prompt and the parser, with a regression test, before the next run.',
+        },
+      ],
+      results: {
+        intro:
+          'Bundled question set: 18 questions over 3 sample documents — 14 answerable, 4 that should be declined. Real models: all-MiniLM-L6-v2 embeddings and Llama 3.2 3B via Ollama on a laptop CPU (Intel Core i7-1255U, no GPU).',
+        rows: [
+          { label: 'Retrieval — Recall@5 · MRR', value: '1.000 · 0.929' },
+          { label: 'Answerable questions answered', value: '14 / 14' },
+          { label: 'Questions that should be declined, declined', value: '4 / 4' },
+          { label: 'Citations — validity · correctness · page accuracy', value: '1.000 · 1.000 · 1.000' },
+          { label: 'Answer latency on CPU — median · p95', value: '26.6 s · 35.1 s' },
+          { label: 'Automated backend tests', value: '176' },
+        ],
+        note: 'A small set I wrote myself, and the prompt and parser fixes were made while looking at it, so these numbers are optimistic: they show the pipeline works, they are not a benchmark. Only 2 of the 4 questions to decline reach the model; the others are stopped by the evidence gate or refused.',
+      },
+      limits: [
+        'The evaluation corpus is tiny (3 documents, 9 passages): perfect Recall@5 is easy at that size and will drop on a real library.',
+        'On a CPU, a 3B model needs about 27 s per answer, and the first streamed token can take over 40 s. Streaming helps much less than it would with a GPU or a hosted API.',
+        'Groundedness and relevance are word-overlap heuristics, not judgments of correctness. Scanned PDFs need OCR, which is not included.',
+      ],
+      stack: ['Python', 'FastAPI', 'SQLAlchemy', 'Alembic', 'PostgreSQL', 'pgvector', 'PyMuPDF', 'Sentence Transformers', 'Ollama', 'React', 'TypeScript', 'Vite', 'Docker Compose', 'pytest', 'GitHub Actions'],
+      sources: [
+        {
+          id: 1,
+          text: 'Repository README — pipeline, RAG workflow, evaluation, limitations.',
+          href: 'https://github.com/Sirine008/documind-ai',
+          linkLabel: 'Sirine008/documind-ai',
+        },
+        {
+          id: 2,
+          text: 'Raw evaluation output — real models.',
+          href: 'https://github.com/Sirine008/documind-ai/blob/main/docs/evaluation-results-ollama.json',
+          linkLabel: 'evaluation-results-ollama.json',
+        },
+        {
+          id: 3,
+          text: 'Evaluation method — metrics and manual review procedure.',
+          href: 'https://github.com/Sirine008/documind-ai/blob/main/docs/evaluation.md',
+          linkLabel: 'evaluation.md',
+        },
+        {
+          id: 4,
+          text: 'API reference — including the streaming endpoint.',
+          href: 'https://github.com/Sirine008/documind-ai/blob/main/docs/api.md',
+          linkLabel: 'api.md',
+        },
+      ],
+    },
+  },
 ]
 
 export interface NotebookEntry {

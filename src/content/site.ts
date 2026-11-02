@@ -38,7 +38,7 @@ export const expertise = [
   {
     domain: 'AI & LLM systems',
     items: 'LLM integration, RAG (vector, hybrid, database-grounded), multi-agent systems, LangChain, embeddings, vector stores (ChromaDB, pgvector), local LLMs with Ollama, NLP, RAG evaluation',
-    usedIn: '01 · 02 · 03 · notebook',
+    usedIn: '01 · 02 · 03 · 06 · notebook',
   },
   {
     domain: 'Data engineering',

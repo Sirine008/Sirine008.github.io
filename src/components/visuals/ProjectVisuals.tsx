@@ -1,4 +1,5 @@
 import { AttijariVisuals } from './AttijariVisuals'
+import { DocumindVisuals } from './DocumindVisuals'
 import { FacultyVisuals } from './FacultyVisuals'
 import { SagemcomVisuals } from './SagemcomVisuals'
 import { StockVisuals } from './StockVisuals'
@@ -17,6 +18,8 @@ export function ProjectVisuals({ slug }: { slug: string }) {
       return <StockVisuals />
     case 'attendance-dashboard':
       return <AttijariVisuals />
+    case 'documind-ai':
+      return <DocumindVisuals />
     default:
       return null
   }

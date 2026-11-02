@@ -26,6 +26,7 @@ export const projectLinks: Record<string, { repo: string | null; demo: string | 
   'faculty-administration': { repo: 'https://github.com/Sirine008/Faculty-Administration-System-', demo: null },
   'stock-forecasting': { repo: 'https://github.com/Sirine008/stock-market-prediction', demo: null },
   'attendance-dashboard': { repo: 'https://github.com/Sirine008/attendance-dashboard-ml', demo: null },
+  'documind-ai': { repo: 'https://github.com/Sirine008/documind-ai', demo: null },
   // Notebook entries
   'agri-analytics': { repo: null, demo: null },
   'semantic-matching': { repo: 'https://github.com/Sirine008/NLP-Semantic-Matching', demo: null },
