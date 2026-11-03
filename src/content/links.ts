@@ -13,7 +13,7 @@ export const profile = {
   github: 'https://github.com/Sirine008',
   githubHandle: 'Sirine008',
   linkedin: 'https://www.linkedin.com/in/sirine-tiouajni-a24400276/',
-  cv: '/cv/Sirine_Tiouajni_CV_FR.pdf',
+  cv: '/cv/Sirine_Tiouajni_CV.pdf',
   cvLabel: 'CV · PDF (French)',
 } as const
 
